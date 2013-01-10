@@ -1,4 +1,7 @@
 package WWW::Curl::UserAgent::Request;
+{
+  $WWW::Curl::UserAgent::Request::VERSION = '0.9.1';
+}
 
 use Moose;
 use WWW::Curl::Easy;

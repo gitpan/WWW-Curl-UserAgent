@@ -1,4 +1,7 @@
 package WWW::Curl::UserAgent::Handler;
+{
+  $WWW::Curl::UserAgent::Handler::VERSION = '0.9.1';
+}
 
 use Moose;
 

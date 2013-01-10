@@ -17,4 +17,4 @@ resources:
   bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=WWW-Curl-UserAgent
   homepage: https://github.com/xing/curl-useragent/wiki
   repository: git://github.com/xing/curl-useragent.git
-version: 0.9.0
+version: 0.9.1
