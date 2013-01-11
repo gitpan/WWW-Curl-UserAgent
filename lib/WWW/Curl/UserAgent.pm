@@ -1,6 +1,6 @@
 package WWW::Curl::UserAgent;
 {
-  $WWW::Curl::UserAgent::VERSION = '0.9.1';
+  $WWW::Curl::UserAgent::VERSION = '0.9.2';
 }
 
 # ABSTRACT: UserAgent based on libcurl
@@ -49,7 +49,7 @@ has keep_alive => (
 has user_agent_string => (
     is      => 'rw',
     isa     => 'Str',
-    default => sub {'www.curl.useragent/0.9.0'},
+    default => sub { "www.curl.useragent/$WWW::Curl::UserAgent::VERSION" },
 );
 
 has _curl_multi => (
@@ -268,7 +268,7 @@ WWW::Curl::UserAgent - UserAgent based on libcurl
 
 =head1 VERSION
 
-version 0.9.1
+version 0.9.2
 
 =head1 SYNOPSIS
 
@@ -319,6 +319,8 @@ when the responses arrive beginning with the first received response. The
 simple method request() does not support this of course, because there are no
 callbacks defined.
 
+This library is in production use on L<https://www.xing.com>.
+
 =head1 CONSTRUCTOR METHODS
 
 The following constructor methods are available:
@@ -334,7 +336,7 @@ The following options correspond to attribute methods described below:
 
     KEY                     DEFAULT
     -----------             --------------------
-    user_agent_string       "www.curl.useragent/0.9.0"
+    user_agent_string       www.curl.useragent/$VERSION
     connect_timeout         300
     timeout                 0
     parallel_requests       5

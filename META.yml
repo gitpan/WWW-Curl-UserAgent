@@ -3,7 +3,13 @@ abstract: 'UserAgent based on libcurl'
 author:
   - 'Julian Knocke'
   - 'Othello Maurer'
-build_requires: {}
+build_requires:
+  HTTP::Request: 0
+  Sub::Override: 0
+  Test::MockObject: 0
+  Test::More: 0
+  strict: 0
+  warnings: 0
 configure_requires:
   ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
@@ -13,8 +19,17 @@ meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
 name: WWW-Curl-UserAgent
+requires:
+  HTTP::Response: 0
+  IO::Select: 0
+  Moose: 0
+  Time::HiRes: 0
+  WWW::Curl::Easy: 0
+  WWW::Curl::Multi: 0
+  bytes: 0
+  perl: v5.10.0
 resources:
-  bugtracker: https://rt.cpan.org/Public/Dist/Display.html?Name=WWW-Curl-UserAgent
-  homepage: https://github.com/xing/curl-useragent/wiki
+  bugtracker: https://github.com/xing/curl-useragent/issues
+  homepage: https://github.com/xing/curl-useragent
   repository: git://github.com/xing/curl-useragent.git
-version: 0.9.1
+version: 0.9.2

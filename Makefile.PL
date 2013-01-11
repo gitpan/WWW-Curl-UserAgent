@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-
+use 5.010000;
 
 use ExtUtils::MakeMaker 6.30;
 
@@ -11,7 +11,14 @@ use ExtUtils::MakeMaker 6.30;
 my %WriteMakefileArgs = (
   "ABSTRACT" => "UserAgent based on libcurl",
   "AUTHOR" => "Julian Knocke, Othello Maurer",
-  "BUILD_REQUIRES" => {},
+  "BUILD_REQUIRES" => {
+    "HTTP::Request" => 0,
+    "Sub::Override" => 0,
+    "Test::MockObject" => 0,
+    "Test::More" => 0,
+    "strict" => 0,
+    "warnings" => 0
+  },
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30"
   },
@@ -19,8 +26,16 @@ my %WriteMakefileArgs = (
   "EXE_FILES" => [],
   "LICENSE" => "perl",
   "NAME" => "WWW::Curl::UserAgent",
-  "PREREQ_PM" => {},
-  "VERSION" => "0.9.1",
+  "PREREQ_PM" => {
+    "HTTP::Response" => 0,
+    "IO::Select" => 0,
+    "Moose" => 0,
+    "Time::HiRes" => 0,
+    "WWW::Curl::Easy" => 0,
+    "WWW::Curl::Multi" => 0,
+    "bytes" => 0
+  },
+  "VERSION" => "0.9.2",
   "test" => {
     "TESTS" => "t/*.t"
   }
