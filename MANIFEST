@@ -1,3 +1,4 @@
+CHANGES
 LICENSE
 MANIFEST
 META.yml
@@ -11,4 +12,5 @@ t/01_request.t
 t/02_setopt.t
 t/03_perform.t
 t/04_integration.t
+t/lib/Test/Webserver.pm
 t/release-pod-syntax.t

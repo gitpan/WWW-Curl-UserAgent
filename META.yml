@@ -4,7 +4,11 @@ author:
   - 'Julian Knocke'
   - 'Othello Maurer'
 build_requires:
+  Daemon::Daemonize: 0
+  Dancer: 0
+  FindBin: 0
   HTTP::Request: 0
+  IO::Scalar: 0
   Sub::Override: 0
   Test::MockObject: 0
   Test::More: 0
@@ -32,4 +36,4 @@ resources:
   bugtracker: https://github.com/xing/curl-useragent/issues
   homepage: https://github.com/xing/curl-useragent
   repository: git://github.com/xing/curl-useragent.git
-version: 0.9.2
+version: 0.9.3

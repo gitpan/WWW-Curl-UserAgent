@@ -1,6 +1,6 @@
 package WWW::Curl::UserAgent;
 {
-  $WWW::Curl::UserAgent::VERSION = '0.9.2';
+  $WWW::Curl::UserAgent::VERSION = '0.9.3';
 }
 
 # ABSTRACT: UserAgent based on libcurl
@@ -43,6 +43,20 @@ has keep_alive => (
     is      => 'rw',
     isa     => 'Bool',
     default => 1,
+);
+
+# follow redirects
+has followlocation => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 0,
+);
+
+# maximum number of redirects
+has max_redirects => (
+    is      => 'ro',
+    isa     => 'Int',
+    default => -1,
 );
 
 # identifier in each request
@@ -97,6 +111,8 @@ sub request {
     my $timeout         = $args{timeout}         // $self->timeout;
     my $connect_timeout = $args{connect_timeout} // $self->connect_timeout;
     my $keep_alive      = $args{keep_alive}      // $self->keep_alive;
+    my $followlocation  = $args{followlocation}  // $self->followlocation;
+    my $max_redirects   = $args{max_redirects}   // $self->max_redirects;
 
     my $response;
     $self->add_handler(
@@ -114,6 +130,8 @@ sub request {
                 connect_timeout => $connect_timeout,
                 timeout         => $timeout,
                 keep_alive      => $keep_alive,
+                followlocation  => $followlocation,
+                max_redirects   => $max_redirects,
             ),
         )
     );
@@ -128,9 +146,11 @@ sub add_request {
     my $on_success      = $args{on_success};
     my $on_failure      = $args{on_failure};
     my $request         = $args{request};
-    my $timeout         = $args{timeout} // $self->timeout;
+    my $timeout         = $args{timeout}         // $self->timeout;
     my $connect_timeout = $args{connect_timeout} // $self->connect_timeout;
-    my $keep_alive      = $args{keep_alive} // $self->keep_alive;
+    my $keep_alive      = $args{keep_alive}      // $self->keep_alive;
+    my $followlocation  = $args{followlocation}  // $self->followlocation;
+    my $max_redirects   = $args{max_redirects}   // $self->max_redirects;
 
     my $handler = WWW::Curl::UserAgent::Handler->new(
         on_success => $on_success,
@@ -140,6 +160,8 @@ sub add_request {
             connect_timeout => $connect_timeout,
             timeout         => $timeout,
             keep_alive      => $keep_alive,
+            followlocation  => $followlocation,
+            max_redirects   => $max_redirects,
         ),
     );
     $self->add_handler($handler);
@@ -241,9 +263,9 @@ sub _build_http_response {
     my $content = shift;
 
     # PUT requests may contain continue header
-    while ( $header =~ s/^HTTP\/1.1 100 Continue\r\n\r\n// ) { }
+    my @header = split "\r\n\r\n", $header;
 
-    my $response = HTTP::Response->parse($header);
+    my $response = HTTP::Response->parse($header[-1]);
     $response->content($content) if defined $content;
 
     # message might include a bad char
@@ -268,7 +290,7 @@ WWW::Curl::UserAgent - UserAgent based on libcurl
 
 =head1 VERSION
 
-version 0.9.2
+version 0.9.3
 
 =head1 SYNOPSIS
 
@@ -291,7 +313,7 @@ version 0.9.2
                 die $response->status_line;
             }
         },
-        on_failue  => sub {
+        on_failure => sub {
             my ( $request, $error_msg, $error_desc ) = @_;
             die "$error_msg: $error_desc";
         },
@@ -341,6 +363,8 @@ The following options correspond to attribute methods described below:
     timeout                 0
     parallel_requests       5
     keep_alive              1
+    followlocation          0
+    max_redirects           -1
 
 =back
 
@@ -370,6 +394,18 @@ TCP connection is forced to be closed after receiving the response and the
 corresponding header "Connection: close" is set. If keep-alive is enabled
 (default) libcurl will handle the connections.
 
+=item $ua->followlocation / $ua->followlocation($boolean)
+
+Get/set if curl should follow redirects. The headers of the redirect respones
+are thrown away while redirecting, so that the final response will be passed
+into the corresponding handler.
+
+=item $ua->max_redirects / $ua->max_redirects($max_redirects)
+
+Get/set the maximum amount of redirects. -1 (default) means infinite redirects.
+0 means no redirects at all. If the maximum redirect is reached the on_failure
+handler will be called.
+
 =item $ua->user_agent_string / $ua->user_agent_string($user_agent)
 
 Get/set the user agent submitted in each request.
@@ -387,6 +423,8 @@ request. Possible options are:
     connect_timeout
     timeout
     keep_alive
+    followlocation
+    max_redirects
 
 Some examples for a request
 
@@ -410,7 +448,8 @@ callback will be called for every successful read response, even those
 containing error codes. The on_failure handler will be called when libcurl
 reports errors, e.g. timeouts or bad curl settings. The parameters
 C<request>, C<on_success> and C<on_failure> are mandatory. Optional are
-C<timeout>, C<connect_timeout> and C<keep_alive>.
+C<timeout>, C<connect_timeout>, C<keep_alive>, C<followlocation> and
+C<max_redirects>.
 
     $ua->add_request(
         request    => HTTP::Request->new('http://search.cpan.org/'),
@@ -476,6 +515,8 @@ modify the C<WWW::Curl::Easy> object before it gets performed.
             connect_timeout => $ua->connect_timeout,
             timeout         => $ua->timeout,
             keep_alive      => $ua->keep_alive,
+            followlocation  => $ua->followlocation,
+            max_redirects   => $ua->max_redirects,
         ),
     );
 

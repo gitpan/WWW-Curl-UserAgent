@@ -1,6 +1,6 @@
 package WWW::Curl::UserAgent::Request;
 {
-  $WWW::Curl::UserAgent::Request::VERSION = '0.9.2';
+  $WWW::Curl::UserAgent::Request::VERSION = '0.9.3';
 }
 
 use Moose;
@@ -28,6 +28,18 @@ has keep_alive => (
     is       => 'ro',
     isa      => 'Bool',
     required => 1,
+);
+
+has followlocation => (
+    is      => 'ro',
+    isa     => 'Bool',
+    default => 0,
+);
+
+has max_redirects => (
+    is      => 'ro',
+    isa     => 'Int',
+    default => -1,
 );
 
 has curl_easy => (
@@ -62,6 +74,8 @@ sub _build_curl_easy {
     $easy->setopt( CURLOPT_WRITEHEADER,       $self->header_ref );
     $easy->setopt( CURLOPT_WRITEDATA,         $self->content_ref );
     $easy->setopt( CURLOPT_FORBID_REUSE,      !$self->keep_alive );
+    $easy->setopt( CURLOPT_FOLLOWLOCATION,    $self->followlocation );
+    $easy->setopt( CURLOPT_MAXREDIRS,         $self->max_redirects );
 
     # see https://github.com/pauldix/typhoeus/blob/master/lib/typhoeus/easy.rb#L197
     if ( $request->method eq 'GET' ) {

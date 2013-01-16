@@ -12,7 +12,11 @@ my %WriteMakefileArgs = (
   "ABSTRACT" => "UserAgent based on libcurl",
   "AUTHOR" => "Julian Knocke, Othello Maurer",
   "BUILD_REQUIRES" => {
+    "Daemon::Daemonize" => 0,
+    "Dancer" => 0,
+    "FindBin" => 0,
     "HTTP::Request" => 0,
+    "IO::Scalar" => 0,
     "Sub::Override" => 0,
     "Test::MockObject" => 0,
     "Test::More" => 0,
@@ -35,7 +39,7 @@ my %WriteMakefileArgs = (
     "WWW::Curl::Multi" => 0,
     "bytes" => 0
   },
-  "VERSION" => "0.9.2",
+  "VERSION" => "0.9.3",
   "test" => {
     "TESTS" => "t/*.t"
   }
