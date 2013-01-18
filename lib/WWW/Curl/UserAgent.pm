@@ -1,6 +1,6 @@
 package WWW::Curl::UserAgent;
 {
-  $WWW::Curl::UserAgent::VERSION = '0.9.3';
+  $WWW::Curl::UserAgent::VERSION = '0.9.4';
 }
 
 # ABSTRACT: UserAgent based on libcurl
@@ -290,7 +290,7 @@ WWW::Curl::UserAgent - UserAgent based on libcurl
 
 =head1 VERSION
 
-version 0.9.3
+version 0.9.4
 
 =head1 SYNOPSIS
 
@@ -298,8 +298,8 @@ version 0.9.3
     use WWW::Curl::UserAgent;
 
     my $ua = WWW::Curl::UserAgent->new(
-        timeout         => 10,
-        connect_timeout => 1,
+        timeout         => 10000,
+        connect_timeout => 1000,
     );
 
     $ua->add_request(
@@ -432,7 +432,7 @@ Some examples for a request
 
     $response = $ua->request($request);
     $response = $ua->request($request,
-        timeout    => 30,
+        timeout    => 3000,
         keep_alive => 0,
     );
 
