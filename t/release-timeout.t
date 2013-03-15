@@ -18,7 +18,7 @@ use HTTP::Request;
 use Test::Webserver;
 use WWW::Curl::UserAgent;
 
-Test::Webserver->start;
+Test::Webserver->start_webserver_daemon;
 
 my $base_url = 'http://localhost:3000';
 
@@ -55,4 +55,4 @@ my $base_url = 'http://localhost:3000';
     $ua->perform;
 }
 
-Test::Webserver->stop;
+Test::Webserver->stop_webserver_daemon;

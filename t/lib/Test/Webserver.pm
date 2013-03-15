@@ -2,6 +2,7 @@ package Test::Webserver;
 
 use Dancer;
 use Daemon::Daemonize qw//;
+use Digest::MD5 qw(md5_hex);
 
 any [ 'get', 'put', 'post', 'delete' ] => '/code/:code' => sub {
     status int params->{code};
@@ -24,9 +25,14 @@ get '/redirect/:times' => sub {
     }
 };
 
+any [ 'put', 'post' ] => '/content_md5' => sub {
+    return md5_hex(request->body);
+};
+
+
 my $pid = "$0.pid";
 
-sub start {
+sub start_webserver_daemon {
     Daemon::Daemonize->daemonize(
         chdir => undef,
         run   => sub {
@@ -37,7 +43,7 @@ sub start {
     );
 }
 
-sub stop {
+sub stop_webserver_daemon {
     my $child_pid = Daemon::Daemonize->read_pidfile($pid);
     kill 15, $child_pid;
 }

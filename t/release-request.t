@@ -12,13 +12,14 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/lib", "$FindBin::Bin/../lib", "$FindBin::Bin/../../lib";
 
-use Test::More tests => 22;
+use Test::More tests => 24;
 
 use HTTP::Request;
 use Test::Webserver;
 use WWW::Curl::UserAgent;
+use Digest::MD5 qw(md5_hex);
 
-Test::Webserver->start;
+Test::Webserver->start_webserver_daemon;
 
 my $base_url = 'http://localhost:3000';
 
@@ -111,4 +112,23 @@ my $base_url = 'http://localhost:3000';
     $ua->perform;
 }
 
-Test::Webserver->stop
+{
+    note 'put with large body';
+
+    my $content = '';
+    for (my $i = 0; $i < 20_000; $i++) {
+        $content .= int(rand(10));
+    }
+    my $content_md5 = md5_hex($content);
+
+    my $request = HTTP::Request->new( PUT => "$base_url/content_md5" );
+    $request->content($content);
+
+    my $ua = WWW::Curl::UserAgent->new;
+    my $res = $ua->request($request);
+
+    ok $res->is_success, "PUT request";
+    is $res->content, $content_md5;
+}
+
+Test::Webserver->stop_webserver_daemon;

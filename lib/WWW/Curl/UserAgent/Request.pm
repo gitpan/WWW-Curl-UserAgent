@@ -1,6 +1,6 @@
 package WWW::Curl::UserAgent::Request;
 {
-  $WWW::Curl::UserAgent::Request::VERSION = '0.9.4';
+  $WWW::Curl::UserAgent::Request::VERSION = '0.9.5';
 }
 
 use Moose;
@@ -117,8 +117,11 @@ sub _build_curl_easy {
 
 sub _read_callback {
     my ( $maxlength, $pointer ) = @_;
-    my $data = $$pointer;
-    $$pointer = '';
+    my $data = substr( $$pointer, 0, $maxlength );
+    $$pointer =
+      length($$pointer) > $maxlength
+      ? scalar substr( $$pointer, $maxlength )
+      : '';
     return $data;
 }
 

@@ -1,6 +1,6 @@
 package WWW::Curl::UserAgent;
 {
-  $WWW::Curl::UserAgent::VERSION = '0.9.4';
+  $WWW::Curl::UserAgent::VERSION = '0.9.5';
 }
 
 # ABSTRACT: UserAgent based on libcurl
@@ -290,7 +290,7 @@ WWW::Curl::UserAgent - UserAgent based on libcurl
 
 =head1 VERSION
 
-version 0.9.4
+version 0.9.5
 
 =head1 SYNOPSIS
 
@@ -303,7 +303,7 @@ version 0.9.4
     );
 
     $ua->add_request(
-        request    => HTTP::Request->new('http://search.cpan.org/'),
+        request    => HTTP::Request->new( GET => 'http://search.cpan.org/'),
         on_success => sub {
             my ( $request, $response ) = @_;
             if ($response->is_success) {
@@ -428,7 +428,7 @@ request. Possible options are:
 
 Some examples for a request
 
-    my $request = HTTP::Request->new('http://search.cpan.org/');
+    my $request = HTTP::Request->new( GET => 'http://search.cpan.org/');
 
     $response = $ua->request($request);
     $response = $ua->request($request,
@@ -452,7 +452,7 @@ C<timeout>, C<connect_timeout>, C<keep_alive>, C<followlocation> and
 C<max_redirects>.
 
     $ua->add_request(
-        request    => HTTP::Request->new('http://search.cpan.org/'),
+        request    => HTTP::Request->new( GET => 'http://search.cpan.org/'),
         on_success => sub {
             my ( $request, $response, $easy ) = @_;
             print $request->as_string;
@@ -511,7 +511,7 @@ modify the C<WWW::Curl::Easy> object before it gets performed.
             # error handling
         }
         request    => WWW::Curl::UserAgent::Request->new(
-            http_request    => HTTP::Request->new('http://search.cpan.org/'),
+            http_request    => HTTP::Request->new( GET => 'http://search.cpan.org/'),
             connect_timeout => $ua->connect_timeout,
             timeout         => $ua->timeout,
             keep_alive      => $ua->keep_alive,
@@ -530,6 +530,38 @@ Perform all queued requests. This method will return after all responses have
 been received and handler have been processed.
 
 =back
+
+=head1 BENCHMARK
+
+A test with the tools/benchmark.pl script against loadbalanced webserver
+performing a get requests to a simple echo API on an Intel i5 M 520 with
+Fedora 18 gave the following results:
+
+    500 requests (sequentially, 500 iterations):
+    +--------------------------+-----------+------+------+------------+------------+
+    |        User Agent        | Wallclock |  CPU |  CPU |  Requests  | Iterations |
+    |                          |  seconds  |  usr |  sys | per second | per second |
+    +--------------------------+-----------+------+------+------------+------------+
+    | LWP::Parallel::UserAgent |    14     | 0.91 | 0.30 |    35.7    |    413.2   |
+    +--------------------------+-----------+------+------+------------+------------+
+    | LWP::UserAgent           |    15     | 1.00 | 0.30 |    33.3    |    384.6   |
+    +--------------------------+-----------+------+------+------------+------------+
+    | WWW::Curl::Simple        |    15     | 0.68 | 0.35 |    33.3    |    485.4   |
+    +--------------------------+-----------+------+------+------------+------------+
+    | WWW::Curl::UserAgent     |     8     | 0.52 | 0.06 |    62.5    |    862.1   |
+    +--------------------------+-----------+------+------+------------+------------+
+
+    500 requests (5 in parallel, 100 iterations):
+    +--------------------------+-----------+-------+-------+------------+------------+
+    |        User Agent        | Wallclock |  CPU  |  CPU  |  Requests  | Iterations |
+    |                          |  seconds  |  usr  |  sys  | per second | per second |
+    +--------------------------+-----------+-------+-------+------------+------------+
+    | LWP::Parallel::UserAgent |      9    |  1.37 |  0.34 |     55.6   |     58.5   |
+    +--------------------------+-----------+-------+-------+------------+------------+
+    | WWW::Curl::Simple        |    135    | 57.61 | 19.85 |      3.7   |      1.3   |
+    +--------------------------+-----------+-------+-------+------------+------------+
+    | WWW::Curl::UserAgent     |      2    |  0.40 |  0.09 |    250.0   |    204.1   |
+    +--------------------------+-----------+-------+-------+------------+------------+
 
 =head1 SEE ALSO
 
