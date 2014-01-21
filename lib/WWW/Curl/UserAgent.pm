@@ -1,6 +1,6 @@
 package WWW::Curl::UserAgent;
 {
-  $WWW::Curl::UserAgent::VERSION = '0.9.5';
+  $WWW::Curl::UserAgent::VERSION = '0.9.6';
 }
 
 # ABSTRACT: UserAgent based on libcurl
@@ -10,6 +10,7 @@ use v5.10;
 
 use WWW::Curl::Easy;
 use WWW::Curl::Multi;
+use HTTP::Request;
 use HTTP::Response;
 use Time::HiRes;
 use IO::Select;
@@ -217,7 +218,22 @@ sub _perform_callbacks {
         my $curl_easy = $request->curl_easy;
 
         if ( $return_code == 0 ) {
-            my $response = $self->_build_http_response( ${ $request->header_ref }, ${ $request->content_ref } );
+
+            # Assume the final http request is the original one
+            my $final_http_request = $request->http_request();
+            my $effective_url = $curl_easy->getinfo( CURLINFO_EFFECTIVE_URL );
+
+            # Handle redirection last effective Request so
+            # the response is always link to the last request in effect.
+            if( $effective_url && (  $final_http_request->uri().'' ne $effective_url ) ){
+                $final_http_request = HTTP::Request
+                    ->new($final_http_request->method,
+                          $effective_url,
+                          $final_http_request->headers(),
+                          $final_http_request->content());
+            }
+
+            my $response = $self->_build_http_response( ${ $request->header_ref }, ${ $request->content_ref }, $final_http_request );
             $handler->on_success->( $request->http_request, $response, $curl_easy );
         }
         else {
@@ -261,11 +277,18 @@ sub _build_http_response {
     my $self    = shift;
     my $header  = shift;
     my $content = shift;
+    my $final_http_request = shift;
 
     # PUT requests may contain continue header
     my @header = split "\r\n\r\n", $header;
 
     my $response = HTTP::Response->parse($header[-1]);
+
+    if( $final_http_request ){
+        # Inject this in the response to behave more like LWP::UserAgent
+        $response->request($final_http_request);
+    }
+
     $response->content($content) if defined $content;
 
     # message might include a bad char
@@ -290,7 +313,7 @@ WWW::Curl::UserAgent - UserAgent based on libcurl
 
 =head1 VERSION
 
-version 0.9.5
+version 0.9.6
 
 =head1 SYNOPSIS
 
@@ -303,7 +326,7 @@ version 0.9.5
     );
 
     $ua->add_request(
-        request    => HTTP::Request->new( GET => 'http://search.cpan.org/'),
+        request    => HTTP::Request->new( GET => 'http://search.cpan.org/' ),
         on_success => sub {
             my ( $request, $response ) = @_;
             if ($response->is_success) {
@@ -336,7 +359,7 @@ DELETE.
 There is a simpler interface too, which just returns a C<HTTP::Response> for a
 given C<HTTP::Request>, named request(). The normal approach to use this
 library is to add as many requests with callbacks as your code allows to do and
-run C<perform> afterwards. Then the callbacks will be excecuted sequentially
+run C<perform> afterwards. Then the callbacks will be executed sequentially
 when the responses arrive beginning with the first received response. The
 simple method request() does not support this of course, because there are no
 callbacks defined.

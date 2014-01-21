@@ -15,4 +15,5 @@ t/lib/Test/Webserver.pm
 t/release-pod-syntax.t
 t/release-redirect.t
 t/release-request.t
+t/release-response_base.t
 t/release-timeout.t

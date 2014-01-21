@@ -5,7 +5,6 @@ author:
   - 'Othello Maurer'
 build_requires:
   FindBin: 0
-  HTTP::Request: 0
   Sub::Override: 0
   Test::MockObject: 0
   Test::More: 0
@@ -21,6 +20,7 @@ meta-spec:
   version: 1.4
 name: WWW-Curl-UserAgent
 requires:
+  HTTP::Request: 0
   HTTP::Response: 0
   IO::Select: 0
   Moose: 0
@@ -33,4 +33,4 @@ resources:
   bugtracker: https://github.com/xing/curl-useragent/issues
   homepage: https://github.com/xing/curl-useragent
   repository: git://github.com/xing/curl-useragent.git
-version: 0.9.5
+version: 0.9.6

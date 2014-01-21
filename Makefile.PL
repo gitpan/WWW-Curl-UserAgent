@@ -13,7 +13,6 @@ my %WriteMakefileArgs = (
   "AUTHOR" => "Julian Knocke, Othello Maurer",
   "BUILD_REQUIRES" => {
     "FindBin" => 0,
-    "HTTP::Request" => 0,
     "Sub::Override" => 0,
     "Test::MockObject" => 0,
     "Test::More" => 0,
@@ -28,6 +27,7 @@ my %WriteMakefileArgs = (
   "LICENSE" => "perl",
   "NAME" => "WWW::Curl::UserAgent",
   "PREREQ_PM" => {
+    "HTTP::Request" => 0,
     "HTTP::Response" => 0,
     "IO::Select" => 0,
     "Moose" => 0,
@@ -36,7 +36,7 @@ my %WriteMakefileArgs = (
     "WWW::Curl::Multi" => 0,
     "bytes" => 0
   },
-  "VERSION" => "0.9.5",
+  "VERSION" => "0.9.6",
   "test" => {
     "TESTS" => "t/*.t"
   }
